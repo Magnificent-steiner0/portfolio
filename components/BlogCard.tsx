@@ -1,0 +1,178 @@
+"use client";
+
+import Link from "next/link";
+import { Calendar, Clock, ArrowRight } from "lucide-react";
+import type { BlogPost } from "@/data/blog";
+
+interface BlogCardProps {
+  post: BlogPost;
+}
+
+export default function BlogCard({ post }: BlogCardProps) {
+  const formattedDate = new Date(post.date).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+
+  return (
+    <article
+      className="glass-card"
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        height: "100%",
+        overflow: "hidden",
+      }}
+    >
+      {/* Cover image placeholder */}
+      <Link href={`/blog/${post.slug}`} style={{ textDecoration: "none" }}>
+        <div
+          style={{
+            height: "160px",
+            background: coverGradient(post.slug),
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontSize: "3rem",
+          }}
+        >
+          {coverEmoji(post.slug)}
+        </div>
+      </Link>
+
+      <div
+        style={{
+          padding: "1.25rem",
+          display: "flex",
+          flexDirection: "column",
+          flex: 1,
+          gap: "0.75rem",
+        }}
+      >
+        {/* Tags */}
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "0.375rem" }}>
+          {post.tags.slice(0, 3).map((tag) => (
+            <span key={tag} className="pill" style={{ fontSize: "0.6875rem" }}>
+              {tag}
+            </span>
+          ))}
+        </div>
+
+        {/* Title */}
+        <Link href={`/blog/${post.slug}`} style={{ textDecoration: "none" }}>
+          <h3
+            style={{
+              fontSize: "1rem",
+              fontWeight: 700,
+              color: "var(--text-primary)",
+              lineHeight: 1.4,
+              margin: 0,
+              transition: "color 0.2s ease",
+            }}
+            onMouseEnter={(e) =>
+              ((e.target as HTMLElement).style.color = "var(--accent)")
+            }
+            onMouseLeave={(e) =>
+              ((e.target as HTMLElement).style.color = "var(--text-primary)")
+            }
+          >
+            {post.title}
+          </h3>
+        </Link>
+
+        {/* Excerpt */}
+        <p
+          style={{
+            fontSize: "0.875rem",
+            color: "var(--text-secondary)",
+            lineHeight: 1.65,
+            margin: 0,
+            flex: 1,
+            display: "-webkit-box",
+            WebkitLineClamp: 3,
+            WebkitBoxOrient: "vertical",
+            overflow: "hidden",
+          }}
+        >
+          {post.excerpt}
+        </p>
+
+        {/* Meta */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "1rem",
+            paddingTop: "0.5rem",
+            borderTop: "1px solid var(--border)",
+          }}
+        >
+          <span
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "0.3rem",
+              fontSize: "0.75rem",
+              color: "var(--text-muted)",
+            }}
+          >
+            <Calendar size={12} />
+            {formattedDate}
+          </span>
+          <span
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "0.3rem",
+              fontSize: "0.75rem",
+              color: "var(--text-muted)",
+            }}
+          >
+            <Clock size={12} />
+            {post.readingTime}
+          </span>
+          <Link
+            href={`/blog/${post.slug}`}
+            style={{
+              marginLeft: "auto",
+              display: "flex",
+              alignItems: "center",
+              gap: "0.25rem",
+              fontSize: "0.75rem",
+              color: "var(--accent)",
+              textDecoration: "none",
+              fontWeight: 500,
+            }}
+          >
+            Read <ArrowRight size={12} />
+          </Link>
+        </div>
+      </div>
+    </article>
+  );
+}
+
+function coverGradient(slug: string): string {
+  const gradients: Record<string, string> = {
+    "brain-ct-classifier-mil":
+      "linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%)",
+    "rag-customer-support-bot":
+      "linear-gradient(135deg, #0f0c29 0%, #302b63 100%)",
+    "tfidf-faiss-recommendations":
+      "linear-gradient(135deg, #1a0533 0%, #2d1b69 100%)",
+    "langchain-writing-agent":
+      "linear-gradient(135deg, #0a2342 0%, #1b4f8a 100%)",
+  };
+  return gradients[slug] || "linear-gradient(135deg, #0f1117 0%, #1a1a2e 100%)";
+}
+
+function coverEmoji(slug: string): string {
+  const emojis: Record<string, string> = {
+    "brain-ct-classifier-mil": "🧠",
+    "rag-customer-support-bot": "🤖",
+    "tfidf-faiss-recommendations": "🔍",
+    "langchain-writing-agent": "✍️",
+  };
+  return emojis[slug] || "📝";
+}
